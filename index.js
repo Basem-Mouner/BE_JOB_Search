@@ -12,12 +12,13 @@ import { runIo } from "./src/modules/socket/chat/chat.socket.controller.js";
 //____________________________________________________________________
 
 bootstrap(app, express);
+const PORT = process.env.PORT || 3000;
 //____________________________________________________________________
-const serverHttp = app.listen(process.env.PORT, "127.0.0.1", 511, () => {
-  console.log(`Server is running on localhost ${process.env.PORT}`);
+const serverHttp = app.listen(PORT,"0.0.0.0", 511, () => {
+  console.log(`Server is running on localhost ${PORT}`);
   startCronJobs(); // ✅ Explicitly start CRON jobs remove expired OTPs
 });
-
+// "127.0.0.1"
 runIo(serverHttp);
 
 
@@ -31,7 +32,7 @@ serverHttp.on("error", (err) => {
     //or
     setTimeout(() => {
       server.close();
-      server.listen(process.env.PORT);
+      server.listen(PORT);
     }, 1000);
   }
 });

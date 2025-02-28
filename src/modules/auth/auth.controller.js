@@ -7,7 +7,7 @@ import * as validators from "./auth.validation.js";
 import { validation } from "../../middleWare/validation.middleware.js";
 import passport from"passport";
 const FRONTEND_LINK="http://localhost:5173";
-const FrE ="http://127.0.0.1:5501"
+// const FrE ="http://127.0.0.1:5501"
 const FREGIT="https://basem-mouner.github.io/Fr_searchJob_App"
 
  //__________authServices layer routs SignUp_________

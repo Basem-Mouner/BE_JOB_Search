@@ -26,7 +26,7 @@ import { schema } from "./modules/modules.schema.js";
 //🔥==================================================================🔥
 const limiter = rateLimit({
   windowMs: 2 * 60 * 1000, // 2 minutes
-  limit: 50, // Limit each IP to 5 requests per `window` (here, per 15 minutes).
+  limit: 500, // Limit each IP to 5 requests per `window` (here, per 15 minutes).
   standardHeaders: "draft-8", // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
   message: { err: "many request on the server" },
@@ -38,12 +38,16 @@ const limiter = rateLimit({
 });
 
 const bootstrap = (app, express) => {
+
   app.use(
     session({
       secret: "your_secret_key", // Replace with a strong secret key
       resave: false, // Avoid re-saving session if it hasn't changed
       saveUninitialized: false, // Avoid saving empty sessions
-      cookie: { secure: false }, // Set `true` in production with HTTPS
+      // cookie: { secure: false }, // Set `true` in production with HTTPS
+      cookie: { secure: true,
+        //  httpOnly: true, sameSite: "strict"
+         },
     })
   );
 
@@ -52,30 +56,37 @@ const bootstrap = (app, express) => {
   // Apply the rate limiting middleware to all requests.
   app.use(limiter);
   //allows you to enable CORS (Cross-Origin Resource Sharing).
-  let whitelist = process.env.ORIGIN.split(",") || [];
+  let whitelist = process.env.ORIGIN ? process.env.ORIGIN.split(",") : [];
   // console.log(whitelist);
-  var corsOptions = {
+  let corsOptions = {
     origin: function (origin, callback) {
-      if (whitelist.indexOf(origin) !== -1) {
+     
+      
+      if (!origin || whitelist.includes(origin) || origin.startsWith("http://127.0.0.1") || origin.startsWith("http://localhost")||/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin))  {
+       
         callback(null, true);
       } else {
+        
         callback(new Error("Not allowed by CORS"));
       }
     },
-    origin: "*", //to allow postman
+    // origin: "*", //to allow postman
     methods: ["GET", "POST", "PUT", "DELETE", "HEAD", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept-Language"],
     credentials: true,
     preflightContinue: false,
     optionsSuccessStatus: 204,
   };
   app.use(cors(corsOptions));
-  
+  // 👇 حل مشكلة Preflight request
+app.options("*", cors(corsOptions));
+   
 
   //if backend is local and frontend are online server or العكس
   //we implement our private core for this case
 
   // app.use(async (req, res, next) => {
-  //   if (whitelist.includes(req.header('origin'))) {
+  //   if (!whitelist.includes(req.header('origin'))) {
   //     return next(new Error("not allowed by cors",{cause:403}))
   //   }
   //   await res.header("Access-Control-Allow-Origin", req.header("origin"));
@@ -85,6 +96,22 @@ const bootstrap = (app, express) => {
   //   await res.header("Access-Control-Allow-Methods", "*");
   //    next();
   // })
+
+
+//   app.use((req, res, next) => {
+//     const origin = req.header("origin");
+
+//     if (!whitelist.includes(origin)) {
+//         return res.status(403).send("Not allowed by CORS");
+//     }
+
+//     res.header("Access-Control-Allow-Origin", origin);
+//     res.header("Access-Control-Allow-Headers", "*");
+//     res.header("Access-Control-Allow-Private-Network", "true");
+//     res.header("Access-Control-Allow-Methods", "*");
+    
+//     next();
+// });
   //🔥==========================Initialize Passport Social login==========================================🔥
   // Initialize Passport
   app.use(passport.initialize());
