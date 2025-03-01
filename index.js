@@ -18,7 +18,7 @@ const serverHttp = app.listen(PORT,"0.0.0.0", 511, () => {
   console.log(`Server is running on localhost ${PORT}`);
   startCronJobs(); // ✅ Explicitly start CRON jobs remove expired OTPs
 });
-// "127.0.0.1"
+// "127.0.0.1" //"localhost"
 runIo(serverHttp);
 
 

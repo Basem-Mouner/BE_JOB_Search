@@ -2,9 +2,9 @@ import passport from "passport";
 
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
-const BELive="http://jobsearchbasemmouner.eu-4.evennode.com";
+// const BELive="http://jobsearchbasemmouner.eu-4.evennode.com";
 
-// const BELOCAO= "http://localhost:3000"
+const BELive= "http://localhost:3000"
 
 export const setupPassportStrategies = () => {
   passport.use(

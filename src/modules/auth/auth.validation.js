@@ -37,6 +37,7 @@ export const login = Joi.object()
     .keys({
       email: generalFields.email.required(),
       codeOtp: generalFields.codeOtp.required(),
+      acceptLanguage: generalFields.acceptLanguage,
     })
     .options({
       allowUnknown: false, //very dangerous at assign true be carful
@@ -56,6 +57,7 @@ export const confirm_login = Joi.object()
   .keys({
     email: generalFields.email.required(),
     otpCode: generalFields.codeOtp.required(),
+    acceptLanguage: generalFields.acceptLanguage,
   })
   .options({
     allowUnknown: false, //very dangerous at assign true be carful
@@ -65,6 +67,7 @@ export const confirm_login = Joi.object()
 export const resendOtp = Joi.object()
   .keys({
     email: generalFields.email.required(),
+    acceptLanguage: generalFields.acceptLanguage,
   })
   .options({
     allowUnknown: false, //very dangerous at assign true be carful
